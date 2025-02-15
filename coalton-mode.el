@@ -51,8 +51,24 @@
     (modify-syntax-entry ?\n ">" table)
     (modify-syntax-entry ?\" "\"" table)
     (modify-syntax-entry ?\\ "\\" table)
+    (modify-syntax-entry ?\| ". 23bn" table)
+    (modify-syntax-entry ?\# ". 14bn" table)
 
     table))
+
+(defvar coalton-keywords
+  '("define" "declare" "define-type" "define-type-alias" "define-struct"
+    "define-class" "define-instance" "fn" "if" "and" "or" "when" "unless"
+    "cond" "match" "let" "for" "in" "while" "while-let" "break" "continue"
+    "do" "lisp" "return" "the" "progn" "package" "as"))
+
+(defvar coalton-font-lock-keywords
+  `((,(regexp-opt coalton-keywords 'symbols) . font-lock-keyword-face)
+    ("\\b\\([A-Z][a-zA-Z0-9_-]*\\)\\b" . font-lock-type-face)
+    (";.*$"
+     . font-lock-comment-face)
+    ("\\#|\\(.\\|\n\\)*?|\\#"
+     . font-lock-comment-face)))
 
 (defvar coalton--debug nil
   "Enable debugging.")
@@ -69,7 +85,11 @@
   "Major mode for working with Coalton.
 
 \\{coalton-mode-map}"
-  :syntax-table coalton-mode-syntax-table)
+  :syntax-table coalton-mode-syntax-table
+  (setq font-lock-defaults '(coalton-font-lock-keywords))
+  (setq comment-start ";")
+  (setq comment-end "")
+  (setq-local comment-start-skip ";+\\s-*"))
 
 (add-to-list 'auto-mode-alist '("\\.coal\\'" . coalton-mode))
 
